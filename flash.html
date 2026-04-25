@@ -7,6 +7,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
+
+  <!-- Buffer polyfill — required by esptool-js in browser context -->
+  <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
+  <script>window.Buffer = window.Buffer || Buffer;</script>
+
   <style>
     :root {
       --navy:        #1A2A6C;
@@ -26,7 +31,6 @@
       --border-hi:   rgba(26,42,108,0.28);
       --shadow:      rgba(26,42,108,0.10);
       --green:       #2a7a4a;
-      --green-bg:    rgba(42,122,74,0.10);
       --amber:       #8a5a00;
       --amber-bg:    rgba(138,90,0,0.10);
       --err:         #7a1a1a;
@@ -47,8 +51,6 @@
     }
 
     .page {
-      position: relative;
-      z-index: 1;
       min-height: 100vh;
       display: flex;
       flex-direction: column;
@@ -264,10 +266,42 @@
     .actions {
       padding: 20px 28px;
       display: flex;
+      align-items: center;
       gap: 10px;
       flex-wrap: wrap;
       border-bottom: 1px solid var(--border);
     }
+
+    .baud-wrap {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-left: auto;
+    }
+
+    .baud-label {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .baud-select {
+      font-family: var(--mono);
+      font-size: 11px;
+      color: var(--text);
+      background: var(--bg-card2);
+      border: 1px solid var(--border-hi);
+      border-radius: 3px;
+      padding: 6px 10px;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+
+    .baud-select:hover, .baud-select:focus { border-color: var(--navy); }
 
     .btn {
       font-family: var(--cond);
@@ -399,7 +433,8 @@
     @media (max-width: 600px) {
       .card-header { flex-direction: column; }
       .version-badge { align-items: flex-start; }
-      .actions { flex-direction: column; }
+      .actions { flex-direction: column; align-items: flex-start; }
+      .baud-wrap { margin-left: 0; }
       .btn { text-align: center; }
     }
   </style>
@@ -462,6 +497,15 @@
       <button class="btn btn-primary" id="btnFlash" onclick="startFlash()" disabled>Flash Firmware</button>
       <button class="btn btn-ghost" id="btnDisconnect" onclick="disconnectDevice()" disabled>Disconnect</button>
       <button class="btn btn-danger" id="btnErase" onclick="eraseFlash()" disabled>Erase Flash</button>
+      <div class="baud-wrap">
+        <span class="baud-label">Baud</span>
+        <select class="baud-select" id="baudSelect">
+          <option value="115200" selected>115200</option>
+          <option value="460800">460800</option>
+          <option value="230400">230400</option>
+          <option value="921600">921600</option>
+        </select>
+      </div>
     </div>
 
     <div class="manifest-wrap">
@@ -569,15 +613,19 @@
     document.getElementById('btnFlash').disabled      = !connected || flashing;
     document.getElementById('btnDisconnect').disabled = !connected || flashing;
     document.getElementById('btnErase').disabled      = !connected || flashing;
+    document.getElementById('baudSelect').disabled    = connected || flashing;
   }
 
   window.connectDevice = async function () {
-    log('Requesting serial port…', 'info');
+    const baudrate = parseInt(document.getElementById('baudSelect').value, 10);
+    log(`Requesting serial port… (${baudrate} baud)`, 'info');
     try {
       const port = await navigator.serial.requestPort();
       transport = new Transport(port, true);
       espLoader = new ESPLoader({
-        transport, baudrate: 921600, romBaudrate: 115200,
+        transport,
+        baudrate,
+        romBaudrate: 115200,
         terminal: { clean(){}, writeLine(d){ log(d,'dim'); }, write(d){ log(d,'dim'); } },
       });
       log('Connecting to ESP32…', 'info');
@@ -597,6 +645,7 @@
       log(`Connection failed: ${e.message}`, 'err');
       setStatus('Connection failed', 'error');
       espLoader = null; transport = null;
+      setBtns(false, false);
     }
   };
 
