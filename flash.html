@@ -390,11 +390,11 @@
 <!--
   Module script — loads ESPLoader only. Failure here does NOT affect the UI above.
 
-  esptool-js@0.3.0 is used deliberately. Version 0.4.x contains a bug where
-  the bundle references Buffer internally during stub upload in a way that
-  cannot be patched via any external polyfill approach. Version 0.3.0 does
-  not have this issue and connects cleanly in the browser.
-  Do not upgrade without verifying Buffer compatibility.
+  Using the Espressif official GitHub Pages bundle — this is the same bundle
+  that powers https://espressif.github.io/esptool-js/ and is built specifically
+  for browser use with Buffer already included in the bundle. The unpkg
+  bundle.js distribution does not include Buffer and cannot be patched
+  externally at runtime.
 -->
 <script type="module">
   function log(msg, type = 'info') {
@@ -408,7 +408,7 @@
 
   try {
     const { ESPLoader, Transport } =
-      await import('https://unpkg.com/esptool-js@0.3.0/bundle.js');
+      await import('https://espressif.github.io/esptool-js/bundle.js');
     window._ESPLoader = ESPLoader;
     window._Transport = Transport;
     log('ESPLoader ready.', 'ok');
