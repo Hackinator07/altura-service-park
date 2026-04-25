@@ -190,12 +190,8 @@
   <footer class="footer">Altura Rally Computer &nbsp;·&nbsp; Service Park &nbsp;·&nbsp; Web Serial · Chrome / Edge required</footer>
 </div>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     PLAIN SCRIPT — runs immediately, no module dependency.
-     Owns all UI init: target label, manifest fetch, helpers, button handlers.
-     ESPLoader/Transport arrive later via window._ESPLoader / window._Transport
-     set by the module script below.
-     ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Plain script — UI init, manifest, helpers, button handlers.
+     Completely independent of ESPLoader. Runs immediately. -->
 <script>
   const TARGET_DISPLAY = {
     'cyd':'CYD','base':'Base','base-imu':'Base + IMU',
@@ -217,7 +213,7 @@
   window._ESPLoader = null;
   window._Transport = null;
 
-  let manifest  = null;
+  let manifest   = null;
   let flashFiles = [];
 
   function log(msg, type = 'info') {
@@ -389,15 +385,12 @@
     setBtns(true, false);
   };
 
-  // Kick off manifest load immediately — no ESPLoader dependency
   loadManifest();
 </script>
 
-<!-- ═══════════════════════════════════════════════════════════════════════════
-     MODULE SCRIPT — loads ESPLoader asynchronously.
-     A failure here does NOT affect the UI above.
-     On success, assigns window._ESPLoader and window._Transport.
-     ═══════════════════════════════════════════════════════════════════════════ -->
+<!-- Module script — loads ESPLoader only.
+     Failure here does NOT affect the UI above.
+     Switched from broken @latest jsDelivr path to pinned unpkg bundle. -->
 <script type="module">
   function log(msg, type = 'info') {
     const term = document.getElementById('logTerminal');
@@ -410,7 +403,7 @@
 
   try {
     const { ESPLoader, Transport } =
-      await import('https://cdn.jsdelivr.net/gh/adafruit/Adafruit_WebSerial_ESPTool@latest/dist/webserial-esptool.js');
+      await import('https://unpkg.com/esptool-js@0.4.3/bundle.js');
     window._ESPLoader = ESPLoader;
     window._Transport = Transport;
     log('ESPLoader ready.', 'ok');
