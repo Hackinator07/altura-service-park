@@ -9,53 +9,42 @@
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
   <style>
     :root {
-      --navy:       #1A2A6C;
-      --navy-mid:   #223080;
-      --navy-light: #2d3f9e;
-      --steel:      #DDDDE8;
-      --steel-dim:  #b0b0c4;
-      --steel-faint:#f0f0f5;
-      --accent:     #E8F0FF;
-      --dark:       #0d1530;
-      --darker:     #080e20;
-      --mid:        #111a3a;
-      --border:     rgba(221,221,232,0.12);
-      --border-hi:  rgba(221,221,232,0.35);
-      --glow:       rgba(26,42,108,0.6);
-      --mono:       'Share Tech Mono', monospace;
-      --cond:       'Barlow Condensed', sans-serif;
-      --body:       'Barlow', sans-serif;
+      --navy:        #1A2A6C;
+      --navy-mid:    #223080;
+      --navy-light:  #2d3f9e;
+      --steel:       #DDDDE8;
+      --steel-mid:   #c8c8d8;
+      --bg:          #DDDDE8;
+      --bg-card:     #eeeef5;
+      --bg-card2:    #f5f5fa;
+      --text:        #1A2A6C;
+      --text-mid:    #3a4a8c;
+      --text-dim:    #6a7aac;
+      --text-faint:  #9898b8;
+      --border:      rgba(26,42,108,0.12);
+      --border-hi:   rgba(26,42,108,0.30);
+      --shadow:      rgba(26,42,108,0.10);
+      --mono:        'Share Tech Mono', monospace;
+      --cond:        'Barlow Condensed', sans-serif;
+      --body:        'Barlow', sans-serif;
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     html, body {
       height: 100%;
-      background: var(--darker);
-      color: var(--steel);
+      background: var(--bg);
+      color: var(--text);
       font-family: var(--body);
       overflow-x: hidden;
     }
 
-    /* ── Animated grid background ── */
     body::before {
       content: '';
       position: fixed;
       inset: 0;
-      background-image:
-        linear-gradient(rgba(26,42,108,0.07) 1px, transparent 1px),
-        linear-gradient(90deg, rgba(26,42,108,0.07) 1px, transparent 1px);
-      background-size: 40px 40px;
-      pointer-events: none;
-      z-index: 0;
-    }
-
-    /* ── Vignette ── */
-    body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
-      background: radial-gradient(ellipse at center, transparent 40%, rgba(8,14,32,0.85) 100%);
+      background-image: radial-gradient(circle, rgba(26,42,108,0.10) 1px, transparent 1px);
+      background-size: 28px 28px;
       pointer-events: none;
       z-index: 0;
     }
@@ -70,76 +59,64 @@
       padding: 48px 24px 64px;
     }
 
-    /* ── Header ── */
     .header {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 0;
-      margin-bottom: 56px;
+      margin-bottom: 52px;
       animation: fadeDown 0.6s ease both;
     }
 
-    .logo-wrap {
-      width: 200px;
-      margin-bottom: 8px;
-    }
-
-    /* Strip the light background from the SVG rect via filter trick —
-       we embed inline so we can override the rect fill */
-    .logo-wrap svg rect:first-child {
-      fill: transparent !important;
-    }
+    .logo-wrap { width: 220px; margin-bottom: 2px; }
 
     .header-sub {
       font-family: var(--mono);
-      font-size: 10px;
+      font-size: 9px;
       letter-spacing: 6px;
-      color: var(--steel-dim);
+      color: var(--text-dim);
       text-transform: uppercase;
-      margin-top: 4px;
+      margin-top: 6px;
     }
 
     .header-rule {
-      width: 320px;
+      width: 300px;
       height: 1px;
       background: linear-gradient(90deg, transparent, var(--border-hi), transparent);
-      margin-top: 20px;
+      margin-top: 18px;
     }
 
-    /* ── Section title ── */
     .section-title {
       font-family: var(--cond);
       font-weight: 700;
       font-size: 11px;
       letter-spacing: 8px;
       text-transform: uppercase;
-      color: var(--steel-dim);
-      margin-bottom: 32px;
+      color: var(--text-dim);
+      margin-bottom: 28px;
       animation: fadeDown 0.6s 0.1s ease both;
     }
 
-    /* ── Target grid ── */
     .targets {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 16px;
+      grid-template-columns: repeat(auto-fit, minmax(270px, 1fr));
+      gap: 14px;
       width: 100%;
-      max-width: 920px;
+      max-width: 900px;
       animation: fadeUp 0.6s 0.2s ease both;
     }
 
     .target-card {
       position: relative;
-      background: linear-gradient(135deg, rgba(26,42,108,0.18) 0%, rgba(13,21,48,0.6) 100%);
+      background: var(--bg-card);
       border: 1px solid var(--border);
       border-radius: 4px;
-      padding: 28px 28px 24px;
+      padding: 26px 26px 22px;
       cursor: pointer;
-      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s, box-shadow 0.2s;
       overflow: hidden;
       text-decoration: none;
       display: block;
+      box-shadow: 0 2px 8px var(--shadow);
     }
 
     .target-card::before {
@@ -152,71 +129,39 @@
       transition: opacity 0.2s;
     }
 
-    .target-card:hover {
-      border-color: var(--border-hi);
-      background: linear-gradient(135deg, rgba(26,42,108,0.32) 0%, rgba(13,21,48,0.75) 100%);
-      transform: translateY(-2px);
-    }
-
-    .target-card:hover::before { opacity: 1; }
-
-    .target-card.selected {
-      border-color: var(--steel);
-      background: linear-gradient(135deg, rgba(26,42,108,0.45) 0%, rgba(13,21,48,0.85) 100%);
-    }
-
-    .target-card.selected::before { opacity: 1; }
-
-    /* Corner accent */
     .target-card::after {
       content: '';
       position: absolute;
       bottom: 0; right: 0;
-      width: 32px; height: 32px;
+      width: 28px; height: 28px;
       border-bottom: 2px solid var(--border);
       border-right: 2px solid var(--border);
       border-radius: 0 0 4px 0;
       transition: border-color 0.2s;
     }
 
-    .target-card:hover::after,
-    .target-card.selected::after {
+    .target-card:hover {
       border-color: var(--border-hi);
+      background: var(--bg-card2);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--shadow);
     }
 
-    .card-tag {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 4px;
-      color: var(--navy-light);
-      text-transform: uppercase;
-      margin-bottom: 10px;
+    .target-card:hover::before { opacity: 1; }
+    .target-card:hover::after  { border-color: var(--border-hi); }
+
+    .target-card.selected {
+      border-color: var(--navy);
+      background: var(--bg-card2);
+      box-shadow: 0 4px 16px rgba(26,42,108,0.14);
     }
 
-    .target-card.selected .card-tag { color: var(--steel-dim); }
-
-    .card-name {
-      font-family: var(--cond);
-      font-weight: 800;
-      font-size: 26px;
-      letter-spacing: 1px;
-      color: var(--steel);
-      line-height: 1;
-      margin-bottom: 10px;
-      text-transform: uppercase;
-    }
-
-    .card-desc {
-      font-family: var(--body);
-      font-weight: 300;
-      font-size: 12px;
-      color: var(--steel-dim);
-      line-height: 1.6;
-    }
+    .target-card.selected::before { opacity: 1; }
+    .target-card.selected::after  { border-color: var(--navy); }
 
     .card-check {
       position: absolute;
-      top: 20px; right: 20px;
+      top: 18px; right: 18px;
       width: 20px; height: 20px;
       border-radius: 50%;
       border: 1.5px solid var(--border-hi);
@@ -225,60 +170,72 @@
     }
 
     .target-card.selected .card-check {
-      background: var(--navy-light);
-      border-color: var(--steel);
+      background: var(--navy);
+      border-color: var(--navy);
     }
 
-    .card-check svg {
-      opacity: 0;
-      transition: opacity 0.15s;
-    }
-
+    .card-check svg { opacity: 0; transition: opacity 0.15s; }
     .target-card.selected .card-check svg { opacity: 1; }
 
-    /* ── CTA ── */
+    .card-tag {
+      font-family: var(--mono);
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: var(--text-faint);
+      text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+
+    .target-card.selected .card-tag { color: var(--text-dim); }
+
+    .card-name {
+      font-family: var(--cond);
+      font-weight: 800;
+      font-size: 26px;
+      letter-spacing: 1px;
+      color: var(--navy);
+      line-height: 1;
+      margin-bottom: 10px;
+      text-transform: uppercase;
+    }
+
+    .card-desc {
+      font-family: var(--body);
+      font-weight: 400;
+      font-size: 12px;
+      color: var(--text-mid);
+      line-height: 1.6;
+    }
+
     .cta-wrap {
-      margin-top: 48px;
+      margin-top: 44px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 14px;
+      gap: 12px;
       animation: fadeUp 0.6s 0.35s ease both;
     }
 
     .btn-proceed {
       font-family: var(--cond);
       font-weight: 700;
-      font-size: 14px;
+      font-size: 13px;
       letter-spacing: 6px;
       text-transform: uppercase;
       color: var(--steel);
-      background: linear-gradient(135deg, var(--navy) 0%, var(--navy-mid) 100%);
-      border: 1px solid var(--border-hi);
+      background: var(--navy);
+      border: 1px solid transparent;
       border-radius: 3px;
-      padding: 16px 48px;
+      padding: 15px 48px;
       cursor: pointer;
       transition: background 0.2s, box-shadow 0.2s, transform 0.15s, opacity 0.2s;
-      position: relative;
-      overflow: hidden;
     }
 
-    .btn-proceed::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(135deg, rgba(255,255,255,0.06), transparent);
-      pointer-events: none;
-    }
-
-    .btn-proceed:disabled {
-      opacity: 0.35;
-      cursor: not-allowed;
-    }
+    .btn-proceed:disabled { opacity: 0.3; cursor: not-allowed; }
 
     .btn-proceed:not(:disabled):hover {
-      background: linear-gradient(135deg, var(--navy-mid) 0%, var(--navy-light) 100%);
-      box-shadow: 0 0 32px var(--glow);
+      background: var(--navy-light);
+      box-shadow: 0 4px 20px rgba(26,42,108,0.25);
       transform: translateY(-1px);
     }
 
@@ -286,7 +243,7 @@
       font-family: var(--mono);
       font-size: 9px;
       letter-spacing: 3px;
-      color: var(--navy-light);
+      color: var(--text-faint);
       text-transform: uppercase;
       opacity: 0;
       transition: opacity 0.3s;
@@ -294,33 +251,30 @@
 
     .btn-hint.visible { opacity: 1; }
 
-    /* ── Footer ── */
     .footer {
       margin-top: auto;
       padding-top: 48px;
       font-family: var(--mono);
       font-size: 9px;
       letter-spacing: 3px;
-      color: rgba(176,176,196,0.35);
+      color: var(--text-faint);
       text-align: center;
       animation: fadeUp 0.6s 0.5s ease both;
     }
 
-    /* ── Animations ── */
     @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-16px); }
+      from { opacity: 0; transform: translateY(-14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
     @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(16px); }
+      from { opacity: 0; transform: translateY(14px); }
       to   { opacity: 1; transform: translateY(0); }
     }
 
-    /* ── Responsive ── */
     @media (max-width: 600px) {
       .targets { grid-template-columns: 1fr; }
-      .logo-wrap { width: 160px; }
+      .logo-wrap { width: 180px; }
     }
   </style>
 </head>
@@ -329,15 +283,14 @@
 
     <header class="header">
       <div class="logo-wrap">
-        <!-- Inline SVG with transparent background -->
         <svg viewBox="18 95 290 75" xmlns="http://www.w3.org/2000/svg">
           <g transform="translate(221, 81) scale(0.1612)">
             <path fill="#1A2A6C" d="M 441.5,100.5 C 447.555,100.338 453.555,100.838 459.5,102C 467.074,105.135 474.74,107.968 482.5,110.5C 508.988,105.979 535.655,103.979 562.5,104.5C 558.153,108.344 553.153,111.177 547.5,113C 537.293,116.104 527.293,119.77 517.5,124C 509.493,124.238 502.159,126.571 495.5,131C 487.872,136.96 480.538,143.293 473.5,150C 463.764,154.44 456.264,161.273 451,170.5C 450.745,187.114 452.745,203.447 457,219.5C 467.837,232.674 477.504,246.674 486,261.5C 488.901,269.241 490.401,277.241 490.5,285.5C 332.5,285.5 174.5,285.5 16.5,285.5C 16.4208,284.07 16.7542,282.736 17.5,281.5C 25.8568,273.988 35.1901,267.988 45.5,263.5C 40.6171,262.809 35.7838,262.143 31,261.5C 30.3333,260.5 30.3333,259.5 31,258.5C 33.5829,257.126 36.0829,255.626 38.5,254C 55.1529,248.587 72.1529,244.587 89.5,242C 91.6471,239.763 93.9804,237.763 96.5,236C 145.648,212.968 197.315,199.301 251.5,195C 283.632,194.274 314.966,198.941 345.5,209C 354.13,210.086 362.797,210.753 371.5,211C 380.571,212.788 389.571,214.455 398.5,216C 399.152,204.378 397.652,192.878 394,181.5C 386.366,154.528 392.533,131.361 412.5,112C 421.281,105.689 430.947,101.856 441.5,100.5 Z"/>
             <path fill="#DDDDE8" d="M 455.5,122.5 C 452.549,122.713 449.882,122.046 447.5,120.5C 447.18,114.003 450.18,111.836 456.5,114C 459.306,115.305 460.14,117.472 459,120.5C 458.184,121.823 457.017,122.489 455.5,122.5 Z"/>
           </g>
-          <text x="18" y="130" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="52" letter-spacing="-1" fill="#DDDDE8">.altura</text>
-          <rect x="18" y="142" width="284" height="1" fill="#DDDDE8" opacity="0.2"/>
-          <text x="160" y="160" font-family="Arial, sans-serif" font-weight="300" font-size="9" letter-spacing="5" text-anchor="middle" fill="#8899cc">RALLY COMPUTER</text>
+          <text x="18" y="130" font-family="'Arial Black', Arial, sans-serif" font-weight="900" font-size="52" letter-spacing="-1" fill="#1A2A6C">.altura</text>
+          <rect x="18" y="142" width="284" height="1" fill="#1A2A6C" opacity="0.15"/>
+          <text x="160" y="160" font-family="Arial, sans-serif" font-weight="300" font-size="9" letter-spacing="5" text-anchor="middle" fill="#6a7aac">RALLY COMPUTER</text>
         </svg>
       </div>
       <div class="header-sub">Service Park // Firmware Installer</div>
@@ -349,66 +302,42 @@
     <div class="targets" id="targets">
 
       <a class="target-card" data-target="cyd" href="flash.html?target=cyd">
-        <div class="card-check">
-          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
+        <div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="card-tag">Open Source</div>
         <div class="card-name">CYD</div>
         <div class="card-desc">Cheap Yellow Display · NEO-6M GPS<br>Community hardware build</div>
       </a>
 
       <a class="target-card" data-target="base" href="flash.html?target=base">
-        <div class="card-check">
-          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
+        <div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="card-tag">Standard</div>
         <div class="card-name">Base</div>
         <div class="card-desc">GPS odometer &amp; speedometer<br>Core rally computer firmware</div>
       </a>
 
       <a class="target-card" data-target="base-imu" href="flash.html?target=base-imu">
-        <div class="card-check">
-          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
+        <div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="card-tag">Standard + IMU</div>
         <div class="card-name">Base + IMU</div>
         <div class="card-desc">Base firmware with inertial measurement<br>Launch detection &amp; stage timing</div>
       </a>
 
       <a class="target-card" data-target="neo-m8" href="flash.html?target=neo-m8">
-        <div class="card-check">
-          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
+        <div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="card-tag">Precision GPS</div>
         <div class="card-name">NEO-M8</div>
         <div class="card-desc">u-blox NEO-M8 · Enhanced accuracy<br>Dead-reckoning capable</div>
       </a>
 
       <a class="target-card" data-target="neo-m8-imu" href="flash.html?target=neo-m8-imu">
-        <div class="card-check">
-          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
+        <div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="card-tag">Precision GPS + IMU</div>
         <div class="card-name">NEO-M8 + IMU</div>
         <div class="card-desc">NEO-M8 with inertial measurement<br>Full sensor fusion build</div>
       </a>
 
       <a class="target-card" data-target="reckoner" href="flash.html?target=reckoner">
-        <div class="card-check">
-          <svg width="10" height="8" viewBox="0 0 10 8" fill="none">
-            <path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
+        <div class="card-check"><svg width="10" height="8" viewBox="0 0 10 8" fill="none"><path d="M1 4L3.5 6.5L9 1" stroke="#DDDDE8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
         <div class="card-tag">Advanced</div>
         <div class="card-name">Reckoner</div>
         <div class="card-desc">Dead-reckoning navigation build<br>GPS outage resilient</div>
@@ -417,9 +346,7 @@
     </div>
 
     <div class="cta-wrap">
-      <button class="btn-proceed" id="btnProceed" disabled onclick="proceed()">
-        Continue to Flasher
-      </button>
+      <button class="btn-proceed" id="btnProceed" disabled onclick="proceed()">Continue to Flasher</button>
       <div class="btn-hint" id="btnHint">Select a target above to continue</div>
     </div>
 
@@ -434,10 +361,7 @@
     const btn   = document.getElementById('btnProceed');
     const hint  = document.getElementById('btnHint');
     let selected = null;
-
-    // Show hint immediately
     hint.classList.add('visible');
-
     cards.forEach(card => {
       card.addEventListener('click', e => {
         e.preventDefault();
@@ -448,11 +372,8 @@
         hint.classList.remove('visible');
       });
     });
-
     function proceed() {
-      if (selected) {
-        window.location.href = `flash.html?target=${selected}`;
-      }
+      if (selected) window.location.href = `flash.html?target=${selected}`;
     }
   </script>
 </body>
