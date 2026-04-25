@@ -7,21 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
-
-  <!--
-    Buffer polyfill — esptool-js uses Buffer.from / Buffer.alloc internally.
-    The buffer@6 UMD build exposes the full Node-compatible Buffer on window.Buffer.
-    This MUST be a plain <script> (not type="module") so it runs before the
-    module script below, and must be loaded from the UMD bundle, not the ESM build.
-  -->
-  <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.umd.js"></script>
-  <script>
-    // Expose as global so esptool-js bundle can find it
-    if (typeof window.Buffer === 'undefined') {
-      window.Buffer = buffer.Buffer;
-    }
-  </script>
-
   <style>
     :root {
       --navy:        #1A2A6C;
@@ -49,397 +34,78 @@
       --cond:        'Barlow Condensed', sans-serif;
       --body:        'Barlow', sans-serif;
     }
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html, body {
-      height: 100%;
-      background: var(--bg);
-      color: var(--text);
-      font-family: var(--body);
-      overflow-x: hidden;
-    }
-
-    .page {
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 36px 24px 64px;
-    }
-
-    .topbar {
-      width: 100%;
-      max-width: 760px;
-      display: flex;
-      align-items: center;
-      gap: 20px;
-      margin-bottom: 32px;
-      animation: fadeDown 0.5s ease both;
-    }
-
-    .back-btn {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 3px;
-      color: var(--text-dim);
-      text-decoration: none;
-      text-transform: uppercase;
-      border: 1px solid var(--border-hi);
-      border-radius: 3px;
-      padding: 8px 16px;
-      transition: border-color 0.2s, color 0.2s, background 0.2s;
-      white-space: nowrap;
-      background: var(--bg-card);
-    }
-
+    html, body { height: 100%; background: var(--bg); color: var(--text); font-family: var(--body); overflow-x: hidden; }
+    .page { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 36px 24px 64px; }
+    .topbar { width: 100%; max-width: 760px; display: flex; align-items: center; gap: 20px; margin-bottom: 32px; animation: fadeDown 0.5s ease both; }
+    .back-btn { font-family: var(--mono); font-size: 10px; letter-spacing: 3px; color: var(--text-dim); text-decoration: none; text-transform: uppercase; border: 1px solid var(--border-hi); border-radius: 3px; padding: 8px 16px; transition: border-color 0.2s, color 0.2s, background 0.2s; white-space: nowrap; background: var(--bg-card); }
     .back-btn:hover { border-color: var(--navy); color: var(--navy); background: var(--bg-card2); }
-
     .topbar-logo { flex: 1; }
     .topbar-logo svg { display: block; }
-
-    .card {
-      width: 100%;
-      max-width: 760px;
-      background: var(--bg-card);
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      overflow: hidden;
-      box-shadow: 0 2px 12px var(--shadow);
-      animation: fadeUp 0.5s 0.1s ease both;
-    }
-
-    .card-header {
-      padding: 22px 28px 18px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 16px;
-      background: var(--bg-card2);
-    }
-
-    .target-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 5px;
-      color: var(--text-faint);
-      text-transform: uppercase;
-      margin-bottom: 6px;
-    }
-
-    .target-name {
-      font-family: var(--cond);
-      font-weight: 800;
-      font-size: 30px;
-      letter-spacing: 1px;
-      color: var(--navy);
-      text-transform: uppercase;
-      line-height: 1;
-    }
-
+    .card { width: 100%; max-width: 760px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; box-shadow: 0 2px 12px var(--shadow); animation: fadeUp 0.5s 0.1s ease both; }
+    .card-header { padding: 22px 28px 18px; border-bottom: 1px solid var(--border); display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; background: var(--bg-card2); }
+    .target-label { font-family: var(--mono); font-size: 9px; letter-spacing: 5px; color: var(--text-faint); text-transform: uppercase; margin-bottom: 6px; }
+    .target-name { font-family: var(--cond); font-weight: 800; font-size: 30px; letter-spacing: 1px; color: var(--navy); text-transform: uppercase; line-height: 1; }
     .version-badge { display: flex; flex-direction: column; align-items: flex-end; gap: 4px; }
-
-    .version-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 3px;
-      color: var(--text-faint);
-      text-transform: uppercase;
-    }
-
-    .version-value {
-      font-family: var(--mono);
-      font-size: 14px;
-      letter-spacing: 1px;
-      color: var(--navy);
-    }
-
-    .status-row {
-      padding: 14px 28px;
-      border-bottom: 1px solid var(--border);
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .status-dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--steel-mid);
-      flex-shrink: 0;
-      transition: background 0.3s;
-    }
-
+    .version-label { font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: var(--text-faint); text-transform: uppercase; }
+    .version-value { font-family: var(--mono); font-size: 14px; letter-spacing: 1px; color: var(--navy); }
+    .status-row { padding: 14px 28px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 12px; }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--steel-mid); flex-shrink: 0; transition: background 0.3s; }
     .status-dot.connected { background: var(--green); }
     .status-dot.flashing  { background: var(--amber); animation: pulse 0.8s infinite; }
     .status-dot.success   { background: var(--green); }
     .status-dot.error     { background: var(--err); }
-
     @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.35} }
-
-    .status-text {
-      font-family: var(--mono);
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--text-dim);
-      text-transform: uppercase;
-      flex: 1;
-    }
-
-    .chip-info {
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--text-faint);
-      letter-spacing: 1px;
-    }
-
-    .progress-wrap {
-      padding: 18px 28px;
-      border-bottom: 1px solid var(--border);
-    }
-
+    .status-text { font-family: var(--mono); font-size: 10px; letter-spacing: 2px; color: var(--text-dim); text-transform: uppercase; flex: 1; }
+    .chip-info { font-family: var(--mono); font-size: 10px; color: var(--text-faint); letter-spacing: 1px; }
+    .progress-wrap { padding: 18px 28px; border-bottom: 1px solid var(--border); }
     .progress-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
-
-    .progress-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 4px;
-      color: var(--text-faint);
-      text-transform: uppercase;
-    }
-
-    .progress-pct {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 2px;
-      color: var(--text-dim);
-    }
-
-    .progress-track {
-      height: 3px;
-      background: var(--bg-inset);
-      border-radius: 2px;
-      overflow: hidden;
-    }
-
-    .progress-fill {
-      height: 100%;
-      width: 0%;
-      background: linear-gradient(90deg, var(--navy-mid), var(--navy-light));
-      border-radius: 2px;
-      transition: width 0.3s ease;
-    }
-
+    .progress-label { font-family: var(--mono); font-size: 9px; letter-spacing: 4px; color: var(--text-faint); text-transform: uppercase; }
+    .progress-pct { font-family: var(--mono); font-size: 9px; letter-spacing: 2px; color: var(--text-dim); }
+    .progress-track { height: 3px; background: var(--bg-inset); border-radius: 2px; overflow: hidden; }
+    .progress-fill { height: 100%; width: 0%; background: linear-gradient(90deg, var(--navy-mid), var(--navy-light)); border-radius: 2px; transition: width 0.3s ease; }
     .progress-fill.complete { background: var(--green); }
     .progress-fill.error    { background: var(--err); }
-
-    .log-wrap {
-      padding: 18px 28px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .log-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 4px;
-      color: var(--text-faint);
-      text-transform: uppercase;
-      margin-bottom: 10px;
-    }
-
-    .log-terminal {
-      background: var(--bg-inset);
-      border: 1px solid var(--border);
-      border-radius: 3px;
-      padding: 14px;
-      height: 180px;
-      overflow-y: auto;
-      font-family: var(--mono);
-      font-size: 11px;
-      line-height: 1.7;
-      color: var(--text-dim);
-      scroll-behavior: smooth;
-    }
-
+    .log-wrap { padding: 18px 28px; border-bottom: 1px solid var(--border); }
+    .log-label { font-family: var(--mono); font-size: 9px; letter-spacing: 4px; color: var(--text-faint); text-transform: uppercase; margin-bottom: 10px; }
+    .log-terminal { background: var(--bg-inset); border: 1px solid var(--border); border-radius: 3px; padding: 14px; height: 180px; overflow-y: auto; font-family: var(--mono); font-size: 11px; line-height: 1.7; color: var(--text-dim); scroll-behavior: smooth; }
     .log-terminal::-webkit-scrollbar { width: 4px; }
     .log-terminal::-webkit-scrollbar-track { background: transparent; }
     .log-terminal::-webkit-scrollbar-thumb { background: var(--border-hi); border-radius: 2px; }
-
     .log-line       { display: block; }
     .log-line.info  { color: var(--text-dim); }
     .log-line.ok    { color: var(--green); }
     .log-line.warn  { color: var(--amber); }
     .log-line.err   { color: var(--err); }
     .log-line.dim   { color: var(--text-faint); }
-
-    .actions {
-      padding: 20px 28px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .baud-wrap {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      margin-left: auto;
-    }
-
-    .baud-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 3px;
-      color: var(--text-faint);
-      text-transform: uppercase;
-      white-space: nowrap;
-    }
-
-    .baud-select {
-      font-family: var(--mono);
-      font-size: 11px;
-      color: var(--text);
-      background: var(--bg-card2);
-      border: 1px solid var(--border-hi);
-      border-radius: 3px;
-      padding: 6px 10px;
-      cursor: pointer;
-      outline: none;
-      transition: border-color 0.2s;
-    }
-
+    .actions { padding: 20px 28px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; border-bottom: 1px solid var(--border); }
+    .baud-wrap { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+    .baud-label { font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: var(--text-faint); text-transform: uppercase; white-space: nowrap; }
+    .baud-select { font-family: var(--mono); font-size: 11px; color: var(--text); background: var(--bg-card2); border: 1px solid var(--border-hi); border-radius: 3px; padding: 6px 10px; cursor: pointer; outline: none; transition: border-color 0.2s; }
     .baud-select:hover, .baud-select:focus { border-color: var(--navy); }
-
-    .btn {
-      font-family: var(--cond);
-      font-weight: 700;
-      font-size: 12px;
-      letter-spacing: 5px;
-      text-transform: uppercase;
-      border-radius: 3px;
-      padding: 12px 28px;
-      cursor: pointer;
-      transition: all 0.2s;
-      border: 1px solid transparent;
-    }
-
+    .btn { font-family: var(--cond); font-weight: 700; font-size: 12px; letter-spacing: 5px; text-transform: uppercase; border-radius: 3px; padding: 12px 28px; cursor: pointer; transition: all 0.2s; border: 1px solid transparent; }
     .btn:disabled { opacity: 0.3; cursor: not-allowed; }
-
-    .btn-primary {
-      background: var(--navy);
-      border-color: var(--navy);
-      color: var(--steel);
-    }
-
-    .btn-primary:not(:disabled):hover {
-      background: var(--navy-light);
-      border-color: var(--navy-light);
-      box-shadow: 0 3px 14px rgba(26,42,108,0.22);
-    }
-
-    .btn-ghost {
-      background: transparent;
-      border-color: var(--border-hi);
-      color: var(--text-dim);
-    }
-
-    .btn-ghost:not(:disabled):hover {
-      border-color: var(--navy);
-      color: var(--navy);
-      background: var(--bg-card2);
-    }
-
-    .btn-danger {
-      background: transparent;
-      border-color: rgba(122,26,26,0.25);
-      color: var(--err);
-    }
-
-    .btn-danger:not(:disabled):hover {
-      background: var(--err-bg);
-      border-color: var(--err);
-    }
-
+    .btn-primary { background: var(--navy); border-color: var(--navy); color: var(--steel); }
+    .btn-primary:not(:disabled):hover { background: var(--navy-light); border-color: var(--navy-light); box-shadow: 0 3px 14px rgba(26,42,108,0.22); }
+    .btn-ghost { background: transparent; border-color: var(--border-hi); color: var(--text-dim); }
+    .btn-ghost:not(:disabled):hover { border-color: var(--navy); color: var(--navy); background: var(--bg-card2); }
+    .btn-danger { background: transparent; border-color: rgba(122,26,26,0.25); color: var(--err); }
+    .btn-danger:not(:disabled):hover { background: var(--err-bg); border-color: var(--err); }
     .manifest-wrap { padding: 18px 28px 24px; }
-
-    .manifest-label {
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 4px;
-      color: var(--text-faint);
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    .manifest-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-family: var(--mono);
-      font-size: 10px;
-    }
-
-    .manifest-table th {
-      text-align: left;
-      color: var(--text-faint);
-      letter-spacing: 3px;
-      font-size: 8px;
-      text-transform: uppercase;
-      padding: 0 0 8px;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .manifest-table td {
-      padding: 7px 0;
-      color: var(--text-dim);
-      border-bottom: 1px solid var(--border);
-    }
-
+    .manifest-label { font-family: var(--mono); font-size: 9px; letter-spacing: 4px; color: var(--text-faint); text-transform: uppercase; margin-bottom: 12px; }
+    .manifest-table { width: 100%; border-collapse: collapse; font-family: var(--mono); font-size: 10px; }
+    .manifest-table th { text-align: left; color: var(--text-faint); letter-spacing: 3px; font-size: 8px; text-transform: uppercase; padding: 0 0 8px; border-bottom: 1px solid var(--border); }
+    .manifest-table td { padding: 7px 0; color: var(--text-dim); border-bottom: 1px solid var(--border); }
     .manifest-table td:first-child { color: var(--text-faint); width: 100px; }
     .manifest-table td:last-child  { color: var(--text-faint); font-size: 9px; }
-
     .file-status { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--steel-mid); margin-right: 8px; vertical-align: middle; }
     .file-status.ready   { background: var(--green); }
     .file-status.missing { background: var(--err); }
-
-    .warn-banner {
-      margin: 0 28px 18px;
-      padding: 12px 16px;
-      background: var(--amber-bg);
-      border: 1px solid rgba(138,90,0,0.25);
-      border-radius: 3px;
-      font-family: var(--mono);
-      font-size: 10px;
-      color: var(--amber);
-      letter-spacing: 1px;
-      line-height: 1.6;
-      display: none;
-    }
-
+    .warn-banner { margin: 0 28px 18px; padding: 12px 16px; background: var(--amber-bg); border: 1px solid rgba(138,90,0,0.25); border-radius: 3px; font-family: var(--mono); font-size: 10px; color: var(--amber); letter-spacing: 1px; line-height: 1.6; display: none; }
     .warn-banner.visible { display: block; }
-
-    .footer {
-      margin-top: 28px;
-      font-family: var(--mono);
-      font-size: 9px;
-      letter-spacing: 3px;
-      color: var(--text-faint);
-      text-align: center;
-      animation: fadeUp 0.5s 0.4s ease both;
-    }
-
-    @keyframes fadeDown {
-      from { opacity: 0; transform: translateY(-12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(12px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-
+    .footer { margin-top: 28px; font-family: var(--mono); font-size: 9px; letter-spacing: 3px; color: var(--text-faint); text-align: center; animation: fadeUp 0.5s 0.4s ease both; }
+    @keyframes fadeDown { from { opacity: 0; transform: translateY(-12px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes fadeUp   { from { opacity: 0; transform: translateY(12px);  } to { opacity: 1; transform: translateY(0); } }
     @media (max-width: 600px) {
       .card-header { flex-direction: column; }
       .version-badge { align-items: flex-start; }
@@ -478,13 +144,11 @@
         <div class="version-value" id="versionValue">Loading…</div>
       </div>
     </div>
-
     <div class="status-row">
       <div class="status-dot" id="statusDot"></div>
       <div class="status-text" id="statusText">Not connected</div>
       <div class="chip-info" id="chipInfo"></div>
     </div>
-
     <div class="progress-wrap">
       <div class="progress-header">
         <div class="progress-label">Flash Progress</div>
@@ -492,16 +156,13 @@
       </div>
       <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
     </div>
-
     <div class="log-wrap">
       <div class="log-label">Output Log</div>
       <div class="log-terminal" id="logTerminal">
         <span class="log-line dim">// Altura Service Park initialised</span>
       </div>
     </div>
-
     <div class="warn-banner" id="warnBanner">⚠ Web Serial API requires Google Chrome or Microsoft Edge on desktop. Firefox and Safari are not supported.</div>
-
     <div class="actions">
       <button class="btn btn-primary" id="btnConnect" onclick="connectDevice()">Connect Device</button>
       <button class="btn btn-primary" id="btnFlash" onclick="startFlash()" disabled>Flash Firmware</button>
@@ -510,14 +171,13 @@
       <div class="baud-wrap">
         <span class="baud-label">Baud</span>
         <select class="baud-select" id="baudSelect">
-          <option value="115200" selected>115200</option>
+          <option value="921600" selected>921600</option>
           <option value="460800">460800</option>
           <option value="230400">230400</option>
-          <option value="921600">921600</option>
+          <option value="115200">115200</option>
         </select>
       </div>
     </div>
-
     <div class="manifest-wrap">
       <div class="manifest-label">Flash Manifest</div>
       <table class="manifest-table">
@@ -530,23 +190,64 @@
   <footer class="footer">Altura Rally Computer &nbsp;·&nbsp; Service Park &nbsp;·&nbsp; Web Serial · Chrome / Edge required</footer>
 </div>
 
-<script type="module">
-  import { ESPLoader, Transport } from 'https://cdn.jsdelivr.net/gh/adafruit/Adafruit_WebSerial_ESPTool@latest/dist/webserial-esptool.js';
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     PLAIN SCRIPT — runs immediately, no module dependency.
+     Owns all UI init: target label, manifest fetch, helpers, button handlers.
+     ESPLoader/Transport arrive later via window._ESPLoader / window._Transport
+     set by the module script below.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<script>
+  const TARGET_DISPLAY = {
+    'cyd':'CYD','base':'Base','base-imu':'Base + IMU',
+    'neo-m8':'NEO-M8','neo-m8-imu':'NEO-M8 + IMU','reckoner':'Reckoner'
+  };
 
-  const TARGET_DISPLAY = {'cyd':'CYD','base':'Base','base-imu':'Base + IMU','neo-m8':'NEO-M8','neo-m8-imu':'NEO-M8 + IMU','reckoner':'Reckoner'};
   const params = new URLSearchParams(window.location.search);
   const target = params.get('target') || 'cyd';
+
   document.getElementById('targetName').textContent = TARGET_DISPLAY[target] || target;
   document.title = `Altura Service Park — ${TARGET_DISPLAY[target] || target}`;
 
   if (!('serial' in navigator)) {
     document.getElementById('warnBanner').classList.add('visible');
     document.getElementById('btnConnect').disabled = true;
-    log('Web Serial API not available in this browser.', 'err');
-    log('Please use Google Chrome or Microsoft Edge on desktop.', 'warn');
   }
 
-  let espLoader = null, transport = null, manifest = null, flashFiles = [];
+  window._esp       = { loader: null, transport: null };
+  window._ESPLoader = null;
+  window._Transport = null;
+
+  let manifest  = null;
+  let flashFiles = [];
+
+  function log(msg, type = 'info') {
+    const term = document.getElementById('logTerminal');
+    const span = document.createElement('span');
+    span.className = `log-line ${type}`;
+    span.textContent = `[${new Date().toISOString().substr(11,8)}] ${msg}`;
+    term.appendChild(span);
+    term.scrollTop = term.scrollHeight;
+  }
+
+  function setStatus(label, dotClass) {
+    document.getElementById('statusText').textContent = label;
+    document.getElementById('statusDot').className = `status-dot ${dotClass}`;
+  }
+
+  function setProgress(pct, state = '') {
+    const fill = document.getElementById('progressFill');
+    fill.style.width = `${pct}%`;
+    fill.className = `progress-fill ${state}`;
+    document.getElementById('progressPct').textContent = pct > 0 ? `${Math.round(pct)}%` : '—';
+  }
+
+  function setBtns(connected, flashing) {
+    document.getElementById('btnConnect').disabled    = connected || flashing;
+    document.getElementById('btnFlash').disabled      = !connected || flashing;
+    document.getElementById('btnDisconnect').disabled = !connected || flashing;
+    document.getElementById('btnErase').disabled      = !connected || flashing;
+    document.getElementById('baudSelect').disabled    = connected || flashing;
+  }
 
   async function loadManifest() {
     try {
@@ -579,8 +280,7 @@
       try {
         const resp = await fetch(`firmware/${target}/${entry.file}`);
         if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
-        const buf = await resp.arrayBuffer();
-        const data = new Uint8Array(buf);
+        const data = new Uint8Array(await resp.arrayBuffer());
         flashFiles.push({ offset: parseInt(entry.offset, 16), data, name: entry.file });
         const stat = document.getElementById(`fstat-${entry.file}`);
         const size = document.getElementById(`fsize-${entry.file}`);
@@ -597,50 +297,25 @@
     return allOk;
   }
 
-  function log(msg, type = 'info') {
-    const term = document.getElementById('logTerminal');
-    const span = document.createElement('span');
-    span.className = `log-line ${type}`;
-    span.textContent = `[${new Date().toISOString().substr(11,8)}] ${msg}`;
-    term.appendChild(span);
-    term.scrollTop = term.scrollHeight;
-  }
-
-  function setStatus(label, dotClass) {
-    document.getElementById('statusText').textContent = label;
-    document.getElementById('statusDot').className = `status-dot ${dotClass}`;
-  }
-
-  function setProgress(pct, state = '') {
-    const fill = document.getElementById('progressFill');
-    fill.style.width = `${pct}%`;
-    fill.className = `progress-fill ${state}`;
-    document.getElementById('progressPct').textContent = pct > 0 ? `${Math.round(pct)}%` : '—';
-  }
-
-  function setBtns(connected, flashing) {
-    document.getElementById('btnConnect').disabled    = connected || flashing;
-    document.getElementById('btnFlash').disabled      = !connected || flashing;
-    document.getElementById('btnDisconnect').disabled = !connected || flashing;
-    document.getElementById('btnErase').disabled      = !connected || flashing;
-    document.getElementById('baudSelect').disabled    = connected || flashing;
-  }
-
   window.connectDevice = async function () {
+    if (!window._ESPLoader || !window._Transport) {
+      log('ESPLoader not ready — please wait a moment and try again.', 'warn');
+      return;
+    }
     const baudrate = parseInt(document.getElementById('baudSelect').value, 10);
     log(`Requesting serial port… (${baudrate} baud)`, 'info');
     try {
       const port = await navigator.serial.requestPort();
-      transport = new Transport(port, true);
-      espLoader = new ESPLoader({
-        transport,
+      window._esp.transport = new window._Transport(port, true);
+      window._esp.loader = new window._ESPLoader({
+        transport: window._esp.transport,
         baudrate,
         romBaudrate: 115200,
         terminal: { clean(){}, writeLine(d){ log(d,'dim'); }, write(d){ log(d,'dim'); } },
       });
       log('Connecting to ESP32…', 'info');
       setStatus('Connecting…', 'flashing');
-      const chip = await espLoader.main();
+      const chip = await window._esp.loader.main();
       const chipName = chip || 'ESP32';
       document.getElementById('chipInfo').textContent = chipName;
       log(`Connected · ${chipName}`, 'ok');
@@ -649,19 +324,19 @@
       if (manifest) {
         log('Loading firmware binaries…', 'info');
         const ok = await loadBinaries();
-        if (!ok) log('One or more firmware files could not be loaded. Place .bin files in firmware/' + target + '/', 'warn');
+        if (!ok) log('One or more files missing. Place .bin files in firmware/' + target + '/', 'warn');
       }
     } catch (e) {
       log(`Connection failed: ${e.message}`, 'err');
       setStatus('Connection failed', 'error');
-      espLoader = null; transport = null;
+      window._esp.loader = null; window._esp.transport = null;
       setBtns(false, false);
     }
   };
 
   window.disconnectDevice = async function () {
-    if (transport) { try { await transport.disconnect(); } catch (_) {} }
-    espLoader = null; transport = null;
+    if (window._esp.transport) { try { await window._esp.transport.disconnect(); } catch (_) {} }
+    window._esp.loader = null; window._esp.transport = null;
     setStatus('Disconnected', '');
     document.getElementById('chipInfo').textContent = '';
     setBtns(false, false);
@@ -670,20 +345,25 @@
   };
 
   window.startFlash = async function () {
-    if (!espLoader || flashFiles.length === 0) { log('Not ready. Connect device and ensure firmware files are present.', 'warn'); return; }
+    if (!window._esp.loader || flashFiles.length === 0) {
+      log('Not ready. Connect device and ensure firmware files are present.', 'warn');
+      return;
+    }
     setBtns(true, true);
     setStatus('Flashing…', 'flashing');
-    setProgress(1, '');
+    setProgress(1);
     log(`Starting flash · ${manifest.version} · ${flashFiles.length} regions`, 'info');
     try {
-      await espLoader.flashFiles(flashFiles, true, (idx, written, total) => {
+      await window._esp.loader.flashFiles(flashFiles, true, (idx, written, total) => {
         const pct = total > 0 ? (written / total) * 100 : 0;
         setProgress(pct);
-        if (idx !== undefined) document.getElementById('progressPct').textContent = `${flashFiles[idx]?.name || ''} · ${Math.round(pct)}%`;
+        if (idx !== undefined)
+          document.getElementById('progressPct').textContent =
+            `${flashFiles[idx]?.name || ''} · ${Math.round(pct)}%`;
       });
       setProgress(100, 'complete');
       setStatus('Flash complete', 'success');
-      log('Flash complete. You may disconnect and power cycle the device.', 'ok');
+      log('Flash complete. Disconnect and power cycle the device.', 'ok');
     } catch (e) {
       setProgress(0, 'error');
       setStatus('Flash failed', 'error');
@@ -693,13 +373,13 @@
   };
 
   window.eraseFlash = async function () {
-    if (!espLoader) { log('Not connected.', 'warn'); return; }
+    if (!window._esp.loader) { log('Not connected.', 'warn'); return; }
     if (!confirm('This will erase all flash including NVS (saved settings). Continue?')) return;
     setBtns(true, true);
     setStatus('Erasing flash…', 'flashing');
     log('Erasing entire flash chip…', 'warn');
     try {
-      await espLoader.eraseFlash();
+      await window._esp.loader.eraseFlash();
       setStatus('Erase complete', 'connected');
       log('Flash erased.', 'ok');
     } catch (e) {
@@ -709,7 +389,36 @@
     setBtns(true, false);
   };
 
+  // Kick off manifest load immediately — no ESPLoader dependency
   loadManifest();
+</script>
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     MODULE SCRIPT — loads ESPLoader asynchronously.
+     A failure here does NOT affect the UI above.
+     On success, assigns window._ESPLoader and window._Transport.
+     ═══════════════════════════════════════════════════════════════════════════ -->
+<script type="module">
+  function log(msg, type = 'info') {
+    const term = document.getElementById('logTerminal');
+    const span = document.createElement('span');
+    span.className = `log-line ${type}`;
+    span.textContent = `[${new Date().toISOString().substr(11,8)}] ${msg}`;
+    term.appendChild(span);
+    term.scrollTop = term.scrollHeight;
+  }
+
+  try {
+    const { ESPLoader, Transport } =
+      await import('https://cdn.jsdelivr.net/gh/adafruit/Adafruit_WebSerial_ESPTool@latest/dist/webserial-esptool.js');
+    window._ESPLoader = ESPLoader;
+    window._Transport = Transport;
+    log('ESPLoader ready.', 'ok');
+  } catch (e) {
+    log(`ESPLoader failed to load: ${e.message}`, 'err');
+    log('Flashing unavailable — check network connectivity.', 'warn');
+    document.getElementById('btnConnect').disabled = true;
+  }
 </script>
 </body>
 </html>
