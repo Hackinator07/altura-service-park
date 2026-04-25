@@ -8,9 +8,19 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@300;400;600;700;800&family=Barlow:wght@300;400;500&family=Share+Tech+Mono&display=swap" rel="stylesheet" />
 
-  <!-- Buffer polyfill — required by esptool-js in browser context -->
-  <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.min.js"></script>
-  <script>window.Buffer = window.Buffer || Buffer;</script>
+  <!--
+    Buffer polyfill — esptool-js uses Buffer.from / Buffer.alloc internally.
+    The buffer@6 UMD build exposes the full Node-compatible Buffer on window.Buffer.
+    This MUST be a plain <script> (not type="module") so it runs before the
+    module script below, and must be loaded from the UMD bundle, not the ESM build.
+  -->
+  <script src="https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.umd.js"></script>
+  <script>
+    // Expose as global so esptool-js bundle can find it
+    if (typeof window.Buffer === 'undefined') {
+      window.Buffer = buffer.Buffer;
+    }
+  </script>
 
   <style>
     :root {
