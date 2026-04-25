@@ -388,15 +388,13 @@
 </script>
 
 <!--
-  Module script — loads Buffer polyfill first, then ESPLoader.
+  Module script — loads ESPLoader only. Failure here does NOT affect the UI above.
 
-  KEY FIX: Buffer must be injected into globalThis INSIDE the module and
-  BEFORE the esptool-js bundle executes. A plain <script> tag setting
-  window.Buffer is not visible to the module's closure at execution time
-  because the bundle captures its scope on evaluation. We import the
-  buffer@6 ESM build, assign to globalThis.Buffer, then import esptool-js.
-  The dynamic import() of esptool-js happens after Buffer is on globalThis,
-  so the bundle finds it when it runs.
+  esptool-js@0.3.0 is used deliberately. Version 0.4.x contains a bug where
+  the bundle references Buffer internally during stub upload in a way that
+  cannot be patched via any external polyfill approach. Version 0.3.0 does
+  not have this issue and connects cleanly in the browser.
+  Do not upgrade without verifying Buffer compatibility.
 -->
 <script type="module">
   function log(msg, type = 'info') {
@@ -409,13 +407,8 @@
   }
 
   try {
-    // Step 1 — import Buffer from the ESM build of buffer@6 and set on globalThis.
-    // This must happen before esptool-js is imported.
-    const { Buffer: Buf } = await import('https://cdn.jsdelivr.net/npm/buffer@6.0.3/index.js');
-    globalThis.Buffer = Buf;
-
-    // Step 2 — now import esptool-js; Buffer is available when the bundle evaluates.
-    const { ESPLoader, Transport } = await import('https://unpkg.com/esptool-js@0.4.3/bundle.js');
+    const { ESPLoader, Transport } =
+      await import('https://unpkg.com/esptool-js@0.3.0/bundle.js');
     window._ESPLoader = ESPLoader;
     window._Transport = Transport;
     log('ESPLoader ready.', 'ok');
