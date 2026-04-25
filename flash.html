@@ -531,7 +531,7 @@
 </div>
 
 <script type="module">
-  import { ESPLoader, Transport } from 'https://cdn.jsdelivr.net/gh/adafruit/Adafruit_WebSerial_ESPTool@latest/dist/webserial-esptool.js';
+  import { ESPLoader, Transport } from 'https://unpkg.com/esptool-js@0.3.0/bundle.js';
 
   const TARGET_DISPLAY = {'cyd':'CYD','base':'Base','base-imu':'Base + IMU','neo-m8':'NEO-M8','neo-m8-imu':'NEO-M8 + IMU','reckoner':'Reckoner'};
   const params = new URLSearchParams(window.location.search);
