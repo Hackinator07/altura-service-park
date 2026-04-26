@@ -388,13 +388,10 @@
 </script>
 
 <!--
-  Module script — loads ESPLoader only. Failure here does NOT affect the UI above.
-
-  Using the Espressif official GitHub Pages bundle — this is the same bundle
-  that powers https://espressif.github.io/esptool-js/ and is built specifically
-  for browser use with Buffer already included in the bundle. The unpkg
-  bundle.js distribution does not include Buffer and cannot be patched
-  externally at runtime.
+  Module script — loads ESPLoader from a locally hosted bundle.
+  bundle.js must be present in the repo root alongside this file.
+  This avoids all CDN CORS and Buffer compatibility issues.
+  To update: replace bundle.js with a newer version from unpkg or npm.
 -->
 <script type="module">
   function log(msg, type = 'info') {
@@ -407,14 +404,13 @@
   }
 
   try {
-    const { ESPLoader, Transport } =
-      await import('https://espressif.github.io/esptool-js/bundle.js');
+    const { ESPLoader, Transport } = await import('./bundle.js');
     window._ESPLoader = ESPLoader;
     window._Transport = Transport;
     log('ESPLoader ready.', 'ok');
   } catch (e) {
     log(`ESPLoader failed to load: ${e.message}`, 'err');
-    log('Flashing unavailable — check network connectivity.', 'warn');
+    log('Ensure bundle.js is present in the repo root.', 'warn');
     document.getElementById('btnConnect').disabled = true;
   }
 </script>
