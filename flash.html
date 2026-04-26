@@ -349,7 +349,20 @@
     setProgress(1);
     log(`Starting flash · ${manifest.version} · ${flashFiles.length} regions`, 'info');
     try {
-      await window._esp.loader.flashFiles(flashFiles, true, (idx, written, total) => {
+      await window._esp.loader.writeFlash({
+  fileArray: flashFiles,
+  flashSize: "keep",
+  eraseAll: false,
+  compress: true,
+  reportProgress: (idx, written, total) => {
+    const pct = total > 0 ? (written / total) * 100 : 0;
+    setProgress(pct);
+    if (idx !== undefined) {
+      document.getElementById('progressPct').textContent =
+        `${flashFiles[idx]?.name || ''} · ${Math.round(pct)}%`;
+    }
+  }
+});
         const pct = total > 0 ? (written / total) * 100 : 0;
         setProgress(pct);
         if (idx !== undefined)
