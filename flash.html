@@ -349,12 +349,25 @@
     setProgress(1);
     log(`Starting flash · ${manifest.version} · ${flashFiles.length} regions`, 'info');
     try {
-      await window._esp.loader.flashFiles(flashFiles, true, (idx, written, total) => {
-        const pct = total > 0 ? (written / total) * 100 : 0;
-        setProgress(pct);
-        if (idx !== undefined)
+      // esptool-js writeFlash API: fileArray entries need data as a binary string
+      const fileArray = flashFiles.map(f => ({
+        data: Array.from(f.data).map(b => String.fromCharCode(b)).join(''),
+        address: f.offset,
+      }));
+      await window._esp.loader.writeFlash({
+        fileArray,
+        flashSize: 'keep',
+        flashMode: 'keep',
+        flashFreq: 'keep',
+        eraseAll: false,
+        compress: true,
+        reportProgress: (idx, written, total) => {
+          const pct = total > 0 ? (written / total) * 100 : 0;
+          setProgress(pct);
           document.getElementById('progressPct').textContent =
             `${flashFiles[idx]?.name || ''} · ${Math.round(pct)}%`;
+        },
+        calculateMD5Hash: null,
       });
       setProgress(100, 'complete');
       setStatus('Flash complete', 'success');
