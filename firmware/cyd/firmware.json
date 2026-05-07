@@ -1,5 +1,5 @@
 {
-  "version": "v1.0.74",
+  "version": "v1.0.87",
   "files": [
     { "offset": "0x1000",  "file": "altura_rally_neogps_cyd_bootloader.bin" },
     { "offset": "0x8000",  "file": "altura_rally_neogps_cyd_partitions.bin" },
